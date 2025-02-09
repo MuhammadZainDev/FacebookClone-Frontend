@@ -30,18 +30,20 @@ import { parseISO } from 'date-fns';
 import { profileService } from '../services/profileService';
 import { useState, useEffect } from 'react';
 import { getProfilePictureUrl } from '../utils/helpers';
+import axios from 'axios';
 
 const Profile = () => {
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')) || {});
 
     const [formData, setFormData] = useState({
-        first_name: '',
-        last_name: '',
-        email: '',
-        date_of_birth: null,
-        gender: '',
-        profile_picture: null
+        first_name: user.first_name || '',
+        last_name: user.last_name || '',
+        email: user.email || '',
+        date_of_birth: user.date_of_birth ? parseISO(user.date_of_birth) : null,
+        gender: user.gender || '',
+        profile_picture: user.profile_picture || null
     });
     const [imagePreview, setImagePreview] = useState(null);
 
@@ -111,25 +113,25 @@ const Profile = () => {
         }
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
-            const updatedProfile = await profileService.updateProfile({
-                ...formData,
-                date_of_birth: formData.date_of_birth?.toISOString().split('T')[0]
-            });
-            
-            setFormData({
-                ...updatedProfile,
-                date_of_birth: updatedProfile.date_of_birth ? parseISO(updatedProfile.date_of_birth) : null
-            });
-            
-            // Update localStorage
-            localStorage.setItem('user', JSON.stringify(updatedProfile));
-            
-            toast.success('Profile updated successfully');
-            setIsEditing(false);
+            const token = localStorage.getItem('token');
+            const response = await axios.put(
+                'http://localhost:5000/api/users/profile',
+                formData,
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                }
+            );
+
+            // Update local storage with new user data
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+            setUser(response.data.user);
+            toast.success('Profile updated successfully!');
         } catch (error) {
-            toast.error(error.message || 'Failed to update profile');
+            toast.error('Failed to update profile');
+            console.error('Profile update error:', error);
         }
     };
 
@@ -212,93 +214,94 @@ const Profile = () => {
                         <Divider sx={{ mb: 4 }} />
 
                         {/* Profile Form */}
-                        <Grid container spacing={3}>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="First Name"
-                                    name="first_name"
-                                    value={formData.first_name}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <TextField
-                                    fullWidth
-                                    label="Last Name"
-                                    name="last_name"
-                                    value={formData.last_name}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    label="Email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
-                                    type="email"
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                    <DatePicker
-                                        label="Date of Birth"
-                                        value={formData.date_of_birth}
-                                        onChange={(newValue) => {
-                                            setFormData(prev => ({
-                                                ...prev,
-                                                date_of_birth: newValue
-                                            }));
-                                        }}
-                                        disabled={!isEditing}
-                                        slotProps={{ textField: { fullWidth: true } }}
-                                    />
-                                </LocalizationProvider>
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                                <FormControl fullWidth disabled={!isEditing}>
-                                    <InputLabel>Gender</InputLabel>
-                                    <Select
-                                        name="gender"
-                                        value={formData.gender}
+                        <Box component="form" onSubmit={handleSubmit}>
+                            <Grid container spacing={3}>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="First Name"
+                                        name="first_name"
+                                        value={formData.first_name}
                                         onChange={handleChange}
-                                        label="Gender"
-                                    >
-                                        <MenuItem value="male">Male</MenuItem>
-                                        <MenuItem value="female">Female</MenuItem>
-                                        <MenuItem value="custom">Custom</MenuItem>
-                                    </Select>
-                                </FormControl>
+                                        disabled={!isEditing}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="Last Name"
+                                        name="last_name"
+                                        value={formData.last_name}
+                                        onChange={handleChange}
+                                        disabled={!isEditing}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        fullWidth
+                                        label="Email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        disabled={!isEditing}
+                                        type="email"
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        <DatePicker
+                                            label="Date of Birth"
+                                            value={formData.date_of_birth}
+                                            onChange={(newValue) => {
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    date_of_birth: newValue
+                                                }));
+                                            }}
+                                            disabled={!isEditing}
+                                            slotProps={{ textField: { fullWidth: true } }}
+                                        />
+                                    </LocalizationProvider>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <FormControl fullWidth disabled={!isEditing}>
+                                        <InputLabel>Gender</InputLabel>
+                                        <Select
+                                            name="gender"
+                                            value={formData.gender}
+                                            onChange={handleChange}
+                                            label="Gender"
+                                        >
+                                            <MenuItem value="male">Male</MenuItem>
+                                            <MenuItem value="female">Female</MenuItem>
+                                            <MenuItem value="custom">Custom</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
                             </Grid>
-                        </Grid>
 
-                        {isEditing && (
-                            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-                                <Button
-                                    variant="outlined"
-                                    startIcon={<CancelIcon />}
-                                    onClick={() => setIsEditing(false)}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    startIcon={<SaveIcon />}
-                                    onClick={handleSubmit}
-                                    sx={{
-                                        bgcolor: '#42b72a',
-                                        '&:hover': { bgcolor: '#36a420' }
-                                    }}
-                                >
-                                    Save Changes
-                                </Button>
-                            </Box>
-                        )}
+                            {isEditing && (
+                                <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+                                    <Button
+                                        variant="outlined"
+                                        startIcon={<CancelIcon />}
+                                        onClick={() => setIsEditing(false)}
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        variant="contained"
+                                        sx={{
+                                            bgcolor: '#42b72a',
+                                            '&:hover': { bgcolor: '#36a420' }
+                                        }}
+                                    >
+                                        Save Changes
+                                    </Button>
+                                </Box>
+                            )}
+                        </Box>
                     </Paper>
                 )}
             </Container>
