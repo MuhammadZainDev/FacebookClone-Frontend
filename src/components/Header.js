@@ -112,13 +112,25 @@ const Header = () => {
     useEffect(() => {
         const path = location.pathname;
         if (path === '/') setActiveTab(0);
-        else if (path === '/friends') setActiveTab(3);
+        else if (path === '/videos') setActiveTab(1);
+        else if (path === '/friends') setActiveTab(2);
     }, [location.pathname]);
 
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);
-        if (newValue === 0) navigate('/');
-        else if (newValue === 3) navigate('/friends');
+        switch(newValue) {
+            case 0:
+                navigate('/');
+                break;
+            case 1:
+                navigate('/videos');
+                break;
+            case 2:
+                navigate('/friends');
+                break;
+            default:
+                break;
+        }
     };
 
     const handleProfileClick = (event) => {
@@ -133,6 +145,17 @@ const Header = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         navigate('/login');
+    };
+
+    const tabs = [
+        { icon: HomeIcon, path: '/' },
+        { icon: VideoIcon, path: '/videos' },
+        { icon: MarketIcon, path: '/marketplace' },
+        { icon: GroupsIcon, path: '/friends' }
+    ];
+
+    const isActiveTab = (path) => {
+        return location.pathname === path;
     };
 
     return (
@@ -207,12 +230,19 @@ const Header = () => {
                         />
                         <Tab 
                             icon={<VideoIcon sx={{ fontSize: 28 }} />}
-                        />
-                        <Tab 
-                            icon={<MarketIcon sx={{ fontSize: 28 }} />}
+                            sx={{
+                                '&.Mui-selected': {
+                                    color: '#1B74E4',
+                                }
+                            }}
                         />
                         <Tab 
                             icon={<GroupsIcon sx={{ fontSize: 28 }} />}
+                            sx={{
+                                '&.Mui-selected': {
+                                    color: '#1B74E4',
+                                }
+                            }}
                         />
                     </Tabs>
                 </Box>

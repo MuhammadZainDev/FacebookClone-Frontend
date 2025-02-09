@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -10,53 +10,74 @@ import {
     Button,
     TextField,
     CircularProgress,
-    Input
+    Paper,
+    DialogActions
 } from '@mui/material';
 import {
     Close as CloseIcon,
     Public as PublicIcon,
-    PhotoLibrary as PhotoIcon,
-    PersonAdd as TagIcon,
-    EmojiEmotions as EmojiIcon,
-    LocationOn as LocationIcon,
-    GifBox as GifIcon,
-    MoreHoriz as MoreIcon,
-    Cancel as CancelIcon
+    Image as ImageIcon
 } from '@mui/icons-material';
 import axios from 'axios';
 import { getProfilePictureUrl } from '../utils/helpers';
+import { toast } from 'react-hot-toast';
 
 const CreatePostModal = ({ open, handleClose, refreshPosts }) => {
     const [content, setContent] = useState('');
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [previews, setPreviews] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [selectedImages, setSelectedImages] = useState([]);
     const [location, setLocation] = useState('');
     const [feeling, setFeeling] = useState('');
     const [showLocationInput, setShowLocationInput] = useState(false);
     const [showFeelingInput, setShowFeelingInput] = useState(false);
     
-    const fileInputRef = useRef(null);
     const user = JSON.parse(localStorage.getItem('user')) || {};
 
     const handleImageSelect = (event) => {
         const files = Array.from(event.target.files);
         
-        // Convert files to URLs for preview
-        const imageUrls = files.map(file => ({
-            url: URL.createObjectURL(file),
-            file: file
-        }));
-        
-        setSelectedImages([...selectedImages, ...imageUrls]);
+        // Filter for allowed file types
+        const allowedFiles = files.filter(file => 
+            file.type.startsWith('image/') || file.type.startsWith('video/')
+        );
+
+        if (allowedFiles.length + selectedFiles.length > 5) {
+            toast.error('Maximum 5 files allowed');
+            return;
+        }
+
+        setSelectedFiles(prev => [...prev, ...allowedFiles]);
+
+        // Create previews
+        allowedFiles.forEach(file => {
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setPreviews(prev => [...prev, {
+                        type: 'image',
+                        url: reader.result
+                    }]);
+                };
+                reader.readAsDataURL(file);
+            } else if (file.type.startsWith('video/')) {
+                const videoUrl = URL.createObjectURL(file);
+                setPreviews(prev => [...prev, {
+                    type: 'video',
+                    url: videoUrl
+                }]);
+            }
+        });
     };
 
-    const removeImage = (indexToRemove) => {
-        setSelectedImages(selectedImages.filter((_, index) => index !== indexToRemove));
+    const removeFile = (indexToRemove) => {
+        setSelectedFiles(prev => prev.filter((_, index) => index !== indexToRemove));
+        setPreviews(prev => prev.filter((_, index) => index !== indexToRemove));
     };
 
     const handleSubmit = async () => {
-        if (!content.trim() && selectedImages.length === 0) return;
+        if (!content.trim() && selectedFiles.length === 0) return;
 
         setLoading(true);
         setError('');
@@ -64,18 +85,16 @@ const CreatePostModal = ({ open, handleClose, refreshPosts }) => {
         try {
             const token = localStorage.getItem('token');
             
-            // Create FormData to handle file upload
             const formData = new FormData();
             formData.append('content', content);
             formData.append('privacy', 'public');
-            formData.append('post_type', selectedImages.length > 0 ? 'image' : 'text');
+            formData.append('post_type', selectedFiles.length > 0 ? 'image' : 'text');
             
             if (location) formData.append('location', location);
             if (feeling) formData.append('feeling', feeling);
             
-            // Append each image file
-            selectedImages.forEach((image, index) => {
-                formData.append('media', image.file);
+            selectedFiles.forEach(file => {
+                formData.append('media', file);
             });
 
             await axios.post('http://localhost:5000/api/posts', formData, {
@@ -85,9 +104,10 @@ const CreatePostModal = ({ open, handleClose, refreshPosts }) => {
                 }
             });
 
-            // Clear form and close modal
+            toast.success('Post created successfully');
             setContent('');
-            setSelectedImages([]);
+            setSelectedFiles([]);
+            setPreviews([]);
             setLocation('');
             setFeeling('');
             setShowLocationInput(false);
@@ -99,7 +119,7 @@ const CreatePostModal = ({ open, handleClose, refreshPosts }) => {
             }
         } catch (error) {
             console.error('Error creating post:', error);
-            setError('Failed to create post. Please try again.');
+            toast.error(error.response?.data?.message || 'Error creating post');
         } finally {
             setLoading(false);
         }
@@ -189,36 +209,65 @@ const CreatePostModal = ({ open, handleClose, refreshPosts }) => {
                     onChange={(e) => setContent(e.target.value)}
                 />
 
-                {/* Image Previews */}
-                {selectedImages.length > 0 && (
-                    <Box sx={{ mb: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                        {selectedImages.map((image, index) => (
+                {previews.length > 0 && (
+                    <Box sx={{ 
+                        display: 'grid', 
+                        gap: 1,
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+                        mb: 2
+                    }}>
+                        {previews.map((preview, index) => (
                             <Box
                                 key={index}
-                                sx={{ position: 'relative' }}
+                                sx={{
+                                    position: 'relative',
+                                    paddingTop: '100%',
+                                    backgroundColor: '#f0f2f5',
+                                    borderRadius: 1
+                                }}
                             >
-                                <img
-                                    src={image.url}
-                                    alt={`Preview ${index}`}
-                                    style={{
-                                        width: '100px',
-                                        height: '100px',
-                                        objectFit: 'cover',
-                                        borderRadius: '8px'
-                                    }}
-                                />
+                                {preview.type === 'image' ? (
+                                    <img
+                                        src={preview.url}
+                                        alt={`Preview ${index}`}
+                                        style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'cover',
+                                            borderRadius: 8
+                                        }}
+                                    />
+                                ) : (
+                                    <video
+                                        src={preview.url}
+                                        style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'cover',
+                                            borderRadius: 8
+                                        }}
+                                        controls
+                                    />
+                                )}
                                 <IconButton
                                     size="small"
-                                    onClick={() => removeImage(index)}
+                                    onClick={() => removeFile(index)}
                                     sx={{
                                         position: 'absolute',
-                                        top: -8,
-                                        right: -8,
-                                        bgcolor: '#E4E6E9',
-                                        '&:hover': { bgcolor: '#D8DADF' }
+                                        top: 8,
+                                        right: 8,
+                                        bgcolor: 'rgba(0,0,0,0.5)',
+                                        color: 'white',
+                                        '&:hover': {
+                                            bgcolor: 'rgba(0,0,0,0.7)'
+                                        }
                                     }}
                                 >
-                                    <CancelIcon fontSize="small" />
+                                    <CloseIcon fontSize="small" />
                                 </IconButton>
                             </Box>
                         ))}
@@ -257,67 +306,46 @@ const CreatePostModal = ({ open, handleClose, refreshPosts }) => {
                     </Typography>
                 )}
 
-                {/* Hidden file input */}
-                <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    style={{ display: 'none' }}
-                    ref={fileInputRef}
-                    onChange={handleImageSelect}
-                />
-
-                <Box sx={{ 
-                    border: '1px solid #ddd',
-                    borderRadius: 3,
-                    p: 1,
-                    mb: 2
-                }}>
+                <Paper
+                    variant="outlined"
+                    sx={{
+                        p: 2,
+                        borderRadius: 2,
+                        borderColor: '#E4E6EB'
+                    }}
+                >
                     <Box sx={{ 
                         display: 'flex', 
                         justifyContent: 'space-between',
                         alignItems: 'center'
                     }}>
-                        <Typography sx={{ fontWeight: 600, fontSize: 15, pl: 1 }}>
-                            Add to your post
-                        </Typography>
-                        <Box sx={{ display: 'flex' }}>
-                            <IconButton 
-                                sx={{ color: '#45BD62' }}
-                                onClick={() => fileInputRef.current.click()}
-                            >
-                                <PhotoIcon />
-                            </IconButton>
-                            <IconButton sx={{ color: '#1877F2' }}>
-                                <TagIcon />
-                            </IconButton>
-                            <IconButton 
-                                sx={{ color: '#F7B928' }}
-                                onClick={() => setShowFeelingInput(!showFeelingInput)}
-                            >
-                                <EmojiIcon />
-                            </IconButton>
-                            <IconButton 
-                                sx={{ color: '#F5533D' }}
-                                onClick={() => setShowLocationInput(!showLocationInput)}
-                            >
-                                <LocationIcon />
-                            </IconButton>
-                            <IconButton sx={{ color: '#9360F7' }}>
-                                <GifIcon />
-                            </IconButton>
-                            <IconButton>
-                                <MoreIcon />
-                            </IconButton>
+                        <Typography>Add to your post</Typography>
+                        <Box>
+                            <input
+                                accept="image/*,video/*"
+                                style={{ display: 'none' }}
+                                id="media-file"
+                                multiple
+                                type="file"
+                                onChange={handleImageSelect}
+                            />
+                            <label htmlFor="media-file">
+                                <IconButton 
+                                    component="span"
+                                    disabled={selectedFiles.length >= 5}
+                                >
+                                    <ImageIcon sx={{ color: '#45BD62' }} />
+                                </IconButton>
+                            </label>
                         </Box>
                     </Box>
-                </Box>
+                </Paper>
 
                 <Button
                     fullWidth
                     variant="contained"
                     onClick={handleSubmit}
-                    disabled={loading || (!content.trim() && selectedImages.length === 0)}
+                    disabled={loading || (!content.trim() && selectedFiles.length === 0)}
                     sx={{
                         textTransform: 'none',
                         borderRadius: 1,

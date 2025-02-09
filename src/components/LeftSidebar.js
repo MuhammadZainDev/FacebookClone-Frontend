@@ -13,7 +13,6 @@ import {
     Group as GroupIcon,
     Bookmark as BookmarkIcon,
     Store as StoreIcon,
-    OndemandVideo as VideoIcon,
     History as HistoryIcon,
     KeyboardArrowDown as KeyboardArrowDownIcon,
     Star as StarIcon,
@@ -22,61 +21,70 @@ import {
     SportsEsports as GamesIcon,
     People as PeopleIcon,
     Restore as RestoreIcon,
-    Settings as SettingsIcon
+    Settings as SettingsIcon,
+    VideoLibrary as VideoIcon
 } from '@mui/icons-material';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const LeftSidebar = () => {
     const user = JSON.parse(localStorage.getItem('user')) || {};
     const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const menuItems = [
         { 
             icon: <Avatar src={user.profile_picture} />, 
             text: fullName,
-            primary: true
+            primary: true,
+            path: '/profile'
         },
         { 
             icon: <PeopleIcon sx={{ color: '#1877F2' }} />, 
             text: 'Friends',
-            badge: '5 new'
+            badge: '5 new',
+            path: '/friends'
         },
         { 
             icon: <RestoreIcon sx={{ color: '#1877F2' }} />, 
-            text: 'Memories' 
+            text: 'Memories',
+            path: '/memories'
         },
         { 
             icon: <BookmarkIcon sx={{ color: '#8C939D' }} />, 
-            text: 'Saved' 
+            text: 'Saved',
+            path: '/saved'
         },
         { 
             icon: <GroupIcon sx={{ color: '#8C939D' }} />, 
             text: 'Groups',
-            badge: '3 new'
+            badge: '3 new',
+            path: '/groups'
         },
         { 
-            icon: <VideoIcon sx={{ color: '#8C939D' }} />, 
-            text: 'Video' 
-        },
-        { 
-            icon: <StoreIcon sx={{ color: '#8C939D' }} />, 
-            text: 'Marketplace',
-            badge: '2 new'
+            icon: <VideoIcon sx={{ color: '#1877F2' }} />,
+            text: 'Videos',
+            path: '/videos'
         },
         { 
             icon: <EventIcon sx={{ color: '#8C939D' }} />, 
-            text: 'Events' 
+            text: 'Events',
+            path: '/events'
         },
         { 
             icon: <GamesIcon sx={{ color: '#8C939D' }} />, 
-            text: 'Gaming' 
+            text: 'Gaming',
+            path: '/gaming'
         },
         { 
             icon: <FlagIcon sx={{ color: '#8C939D' }} />, 
-            text: 'Pages' 
+            text: 'Pages',
+            path: '/pages'
         },
         { 
             icon: <SettingsIcon sx={{ color: '#8C939D' }} />, 
-            text: 'Settings' 
+            text: 'Settings',
+            path: '/settings'
         }
     ];
 
@@ -85,6 +93,12 @@ const LeftSidebar = () => {
         { text: 'React JS Developers', icon: '/group2.jpg' },
         { text: 'UI/UX Design', icon: '/group3.jpg' }
     ];
+
+    const handleNavigation = (path) => {
+        if (path) {
+            navigate(path);
+        }
+    };
 
     return (
         <Box
@@ -109,6 +123,8 @@ const LeftSidebar = () => {
                     <ListItem 
                         button 
                         key={index}
+                        onClick={() => handleNavigation(item.path)}
+                        selected={location.pathname === item.path}
                         sx={{
                             borderRadius: 2,
                             mx: 1,
@@ -116,6 +132,12 @@ const LeftSidebar = () => {
                             height: 44,
                             '&:hover': {
                                 bgcolor: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            '&.Mui-selected': {
+                                bgcolor: 'rgba(24, 119, 242, 0.1)',
+                                '&:hover': {
+                                    bgcolor: 'rgba(24, 119, 242, 0.15)'
+                                }
                             },
                             '& .MuiListItemText-root': {
                                 overflow: 'hidden'
@@ -131,7 +153,7 @@ const LeftSidebar = () => {
                                     sx={{ 
                                         fontWeight: item.primary ? 600 : 400,
                                         fontSize: 15,
-                                        color: '#050505',
+                                        color: location.pathname === item.path ? '#1877F2' : '#050505',
                                         whiteSpace: 'nowrap',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis'

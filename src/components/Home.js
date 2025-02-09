@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Paper, Avatar, Typography, IconButton, Divider } from '@mui/material';
+import { Box, Paper, Avatar, Typography, IconButton, Divider, Card, CardHeader, CardContent, CardMedia, Button } from '@mui/material';
 import Header from './Header';
 import LeftSidebar from './LeftSidebar';
 import CommentModal from './CommentModal';
@@ -16,6 +16,7 @@ import {
 import CreatePostModal from './CreatePostModal';
 import axios from 'axios';
 import { getProfilePictureUrl } from '../utils/helpers';
+import { toast } from 'react-hot-toast';
 
 const CreatePost = ({ onOpenPostModal }) => {
     const user = JSON.parse(localStorage.getItem('user')) || {};
@@ -90,155 +91,167 @@ const CreatePost = ({ onOpenPostModal }) => {
 };
 
 const Post = ({ post, handleLike, handleOpenComments }) => {
-    const [isLiking, setIsLiking] = useState(false);
+    const [liked, setLiked] = useState(post.is_liked);
+    const [likesCount, setLikesCount] = useState(post.likes_count);
 
     const onLikeClick = async () => {
-        if (isLiking) return;
-        setIsLiking(true);
-        
         try {
-            await handleLike(post.id, !post.is_liked);
+            const token = localStorage.getItem('token');
+            if (!liked) {
+                await axios.post(`http://localhost:5000/api/posts/${post.id}/like`, {}, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setLikesCount(prev => prev + 1);
+            } else {
+                await axios.delete(`http://localhost:5000/api/posts/${post.id}/like`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setLikesCount(prev => prev - 1);
+            }
+            setLiked(!liked);
         } catch (error) {
-            console.error('Error liking post:', error);
-        } finally {
-            setIsLiking(false);
+            console.error('Error toggling like:', error);
+            toast.error('Failed to update like');
         }
     };
 
     return (
-        <Paper sx={{ mb: 3, borderRadius: 3 }}>
-            <Box sx={{ p: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <Card sx={{ mb: 2, borderRadius: 3, boxShadow: 'none', border: '1px solid #E4E6EB' }}>
+            <CardHeader
+                avatar={
                     <Avatar 
-                        src={getProfilePictureUrl(post.user_profile_picture)}
+                        src={getProfilePictureUrl(post.profile_picture)}
                         sx={{ width: 40, height: 40 }}
                     />
-                    <Box sx={{ flex: 1, ml: 2 }}>
-                        <Typography sx={{ fontWeight: 600 }}>
-                            {post.first_name} {post.last_name}
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Typography variant="caption" sx={{ color: '#65676B' }}>
-                                {new Date(post.created_at).toLocaleString()}
-                            </Typography>
-                            <Typography variant="caption" sx={{ mx: 0.5, color: '#65676B' }}>·</Typography>
-                            <PublicIcon sx={{ fontSize: 12, color: '#65676B' }} />
-                        </Box>
-                    </Box>
-                    <IconButton size="small">
+                }
+                action={
+                    <IconButton>
                         <MoreHorizIcon />
                     </IconButton>
-                </Box>
-                <Typography sx={{ mb: 2 }}>{post.content}</Typography>
-                {post.media && post.media.length > 0 && (
-                    <Box sx={{ mb: 2 }}>
-                        {post.media.length === 1 ? (
-                            <Box
-                                component="img"
+                }
+                title={
+                    <Typography sx={{ fontWeight: 600 }}>
+                        {post.first_name} {post.last_name}
+                    </Typography>
+                }
+                subheader={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <Typography variant="body2" color="text.secondary">
+                            {new Date(post.created_at).toLocaleString()}
+                        </Typography>
+                        <PublicIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
+                    </Box>
+                }
+            />
+            
+            {post.content && (
+                <CardContent sx={{ py: 1 }}>
+                    <Typography variant="body1">
+                        {post.content}
+                    </Typography>
+                </CardContent>
+            )}
+
+            {post.media && post.media.length > 0 && (
+                <Box sx={{ position: 'relative' }}>
+                    {post.media_types && post.media_types[0] === 'video' ? (
+                        <Box sx={{ width: '100%', maxHeight: '600px', overflow: 'hidden' }}>
+                            <video
                                 src={post.media[0]}
-                                sx={{
+                                controls
+                                style={{
                                     width: '100%',
-                                    maxHeight: 500,
-                                    objectFit: 'cover'
+                                    maxHeight: '600px',
+                                    objectFit: 'contain'
                                 }}
                             />
-                        ) : (
-                            <Box sx={{ 
-                                display: 'grid', 
-                                gap: 1,
-                                gridTemplateColumns: post.media.length === 2 ? '1fr 1fr' : 'repeat(3, 1fr)',
-                                p: 1
-                            }}>
-                                {post.media.map((url, index) => (
-                                    <Box
-                                        key={index}
-                                        component="img"
-                                        src={url}
-                                        sx={{
-                                            width: '100%',
-                                            height: 200,
-                                            objectFit: 'cover',
-                                            borderRadius: 1
-                                        }}
-                                    />
-                                ))}
-                            </Box>
-                        )}
-                    </Box>
-                )}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    {post.likes_count > 0 && (
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <ThumbUpIcon sx={{ fontSize: 18, color: 'white', bgcolor: '#1B74E4', p: 0.5, borderRadius: '50%' }} />
-                            <Typography sx={{ ml: 1, color: '#65676B' }}>{post.likes_count}</Typography>
                         </Box>
+                    ) : (
+                        <CardMedia
+                            component="img"
+                            image={post.media[0]}
+                            sx={{
+                                width: '100%',
+                                maxHeight: '600px',
+                                objectFit: 'contain'
+                            }}
+                        />
                     )}
+                </Box>
+            )}
+
+            <CardContent sx={{ py: 1 }}>
+                <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    mb: 1
+                }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <ThumbUpIcon 
+                            sx={{ 
+                                fontSize: 20, 
+                                color: 'white',
+                                bgcolor: '#1B74E4',
+                                p: 0.5,
+                                borderRadius: '50%'
+                            }} 
+                        />
+                        <Typography color="text.secondary">
+                            {likesCount}
+                        </Typography>
+                    </Box>
                     <Typography 
-                        sx={{ color: '#65676B', cursor: 'pointer' }}
+                        color="text.secondary"
+                        sx={{ cursor: 'pointer' }}
                         onClick={() => handleOpenComments(post)}
                     >
-                        {post.comments_count || 0} comments
+                        {post.comments_count} comments
                     </Typography>
                 </Box>
-                <Divider sx={{ my: 1 }} />
-                <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
-                    <Box
+
+                <Divider />
+
+                <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    pt: 1
+                }}>
+                    <Button
+                        startIcon={<ThumbUpIcon />}
                         onClick={onLikeClick}
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            p: 1,
-                            borderRadius: 1,
-                            cursor: 'pointer',
+                        sx={{ 
                             flex: 1,
-                            justifyContent: 'center',
+                            color: liked ? '#1B74E4' : 'text.secondary',
                             '&:hover': { bgcolor: '#F0F2F5' }
                         }}
                     >
-                        <ThumbUpIcon sx={{ 
-                            color: post.is_liked ? '#1B74E4' : '#65676B',
-                            mr: 1,
-                            animation: isLiking ? 'likeAnimation 0.3s ease' : 'none',
-                            '@keyframes likeAnimation': {
-                                '0%': { transform: 'scale(1)' },
-                                '50%': { transform: 'scale(1.2)' },
-                                '100%': { transform: 'scale(1)' }
-                            }
-                        }} />
-                        <Typography sx={{ color: post.is_liked ? '#1B74E4' : '#65676B' }}>Like</Typography>
-                    </Box>
-                    <Box
+                        Like
+                    </Button>
+                    <Button
+                        startIcon={<CommentIcon />}
                         onClick={() => handleOpenComments(post)}
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            p: 1,
-                            borderRadius: 1,
-                            cursor: 'pointer',
+                        sx={{ 
                             flex: 1,
-                            justifyContent: 'center',
+                            color: 'text.secondary',
                             '&:hover': { bgcolor: '#F0F2F5' }
                         }}
                     >
-                        <CommentIcon sx={{ color: '#65676B', mr: 1 }} />
-                        <Typography sx={{ color: '#65676B' }}>Comment</Typography>
-                    </Box>
-                    <Box sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        p: 1,
-                        borderRadius: 1,
-                        cursor: 'pointer',
-                        flex: 1,
-                        justifyContent: 'center',
-                        '&:hover': { bgcolor: '#F0F2F5' }
-                    }}>
-                        <ShareIcon sx={{ color: '#65676B', mr: 1 }} />
-                        <Typography sx={{ color: '#65676B' }}>Share</Typography>
-                    </Box>
+                        Comment
+                    </Button>
+                    <Button
+                        startIcon={<ShareIcon />}
+                        sx={{ 
+                            flex: 1,
+                            color: 'text.secondary',
+                            '&:hover': { bgcolor: '#F0F2F5' }
+                        }}
+                    >
+                        Share
+                    </Button>
                 </Box>
-            </Box>
-        </Paper>
+            </CardContent>
+        </Card>
     );
 };
 
@@ -248,7 +261,6 @@ const Home = () => {
     const [loading, setLoading] = useState(true);
     const [selectedPost, setSelectedPost] = useState(null);
     const [openCommentModal, setOpenCommentModal] = useState(false);
-    const user = JSON.parse(localStorage.getItem('user')) || {};
 
     const handleOpenPostModal = () => setOpenPostModal(true);
     const handleClosePostModal = () => setOpenPostModal(false);
@@ -269,9 +281,16 @@ const Home = () => {
             const response = await axios.get('http://localhost:5000/api/posts', {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setPosts(response.data.data);
+            // Filter out video posts, only show image posts or posts without media
+            const filteredPosts = response.data.data.filter(post => 
+                !post.media_types || 
+                post.media_types.length === 0 || 
+                post.media_types[0] === 'image'
+            );
+            setPosts(filteredPosts);
         } catch (error) {
             console.error('Error fetching posts:', error);
+            toast.error('Failed to load posts');
         } finally {
             setLoading(false);
         }

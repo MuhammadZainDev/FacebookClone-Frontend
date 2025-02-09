@@ -136,15 +136,32 @@ const CommentModal = ({ open, handleClose, post }) => {
                     <Typography sx={{ mb: 2 }}>{post.content}</Typography>
 
                     {post.media && post.media.length > 0 && (
-                        <Box
-                            component="img"
-                            src={post.media[0]}
-                            sx={{
-                                width: '100%',
-                                borderRadius: 2,
-                                mb: 2
-                            }}
-                        />
+                        <Box sx={{ position: 'relative', mb: 2 }}>
+                            {post.media_types && post.media_types[0] === 'video' ? (
+                                <Box sx={{ width: '100%', maxHeight: '600px', overflow: 'hidden' }}>
+                                    <video
+                                        src={post.media[0]}
+                                        controls
+                                        style={{
+                                            width: '100%',
+                                            maxHeight: '600px',
+                                            objectFit: 'contain'
+                                        }}
+                                    />
+                                </Box>
+                            ) : (
+                                <Box
+                                    component="img"
+                                    src={post.media[0]}
+                                    sx={{
+                                        width: '100%',
+                                        maxHeight: '600px',
+                                        objectFit: 'contain',
+                                        borderRadius: 1
+                                    }}
+                                />
+                            )}
+                        </Box>
                     )}
 
                     {/* Like/Comment Count */}

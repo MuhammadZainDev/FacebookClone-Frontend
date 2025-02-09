@@ -7,6 +7,7 @@ import Home from './components/Home';
 import AuthGuard from './components/AuthGuard';
 import Friends from './components/Friends';
 import Profile from './components/Profile';
+import VideoFeed from './components/VideoFeed';
 
 function App() {
     return (
@@ -36,6 +37,14 @@ function App() {
                         element={
                             <AuthGuard>
                                 <Profile />
+                            </AuthGuard>
+                        }
+                    />
+                    <Route
+                        path="/videos"
+                        element={
+                            <AuthGuard>
+                                <VideoFeed />
                             </AuthGuard>
                         }
                     />
