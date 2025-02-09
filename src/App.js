@@ -1,0 +1,60 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Login from './components/Login';
+import Signup from './components/Signup';
+import Home from './components/Home';
+import AuthGuard from './components/AuthGuard';
+import Friends from './components/Friends';
+import Profile from './components/Profile';
+
+function App() {
+    return (
+        <>
+            <Router>
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route
+                        path="/"
+                        element={
+                            <AuthGuard>
+                                <Home />
+                            </AuthGuard>
+                        }
+                    />
+                    <Route 
+                        path="/friends" 
+                        element={
+                            <AuthGuard>
+                                <Friends />
+                            </AuthGuard>
+                        } 
+                    />
+                    <Route
+                        path="/profile"
+                        element={
+                            <AuthGuard>
+                                <Profile />
+                            </AuthGuard>
+                        }
+                    />
+                </Routes>
+            </Router>
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+            />
+        </>
+    );
+}
+
+export default App;
