@@ -34,55 +34,47 @@ const LeftSidebar = () => {
 
     const menuItems = [
         { 
-            icon: <Avatar src={user.profile_picture} />, 
-            text: fullName,
-            primary: true,
-            path: '/profile'
-        },
-        { 
-            icon: <PeopleIcon sx={{ color: '#1877F2' }} />, 
+            icon: <PeopleIcon sx={{ color: '#1B74E4', fontSize: 28 }} />, 
             text: 'Friends',
-            badge: '5 new',
             path: '/friends'
         },
         { 
-            icon: <RestoreIcon sx={{ color: '#1877F2' }} />, 
+            icon: <RestoreIcon sx={{ color: '#1B74E4', fontSize: 28 }} />, 
             text: 'Memories',
             path: '/memories'
         },
         { 
-            icon: <BookmarkIcon sx={{ color: '#8C939D' }} />, 
+            icon: <BookmarkIcon sx={{ color: '#8C939D', fontSize: 28 }} />, 
             text: 'Saved',
             path: '/saved'
         },
         { 
-            icon: <GroupIcon sx={{ color: '#8C939D' }} />, 
+            icon: <GroupIcon sx={{ color: '#8C939D', fontSize: 28 }} />, 
             text: 'Groups',
-            badge: '3 new',
             path: '/groups'
         },
         { 
-            icon: <VideoIcon sx={{ color: '#1877F2' }} />,
+            icon: <VideoIcon sx={{ color: '#1B74E4', fontSize: 28 }}/>,
             text: 'Videos',
             path: '/videos'
         },
         { 
-            icon: <EventIcon sx={{ color: '#8C939D' }} />, 
+            icon: <EventIcon sx={{ color: '#8C939D', fontSize: 28 }} />, 
             text: 'Events',
             path: '/events'
         },
         { 
-            icon: <GamesIcon sx={{ color: '#8C939D' }} />, 
+            icon: <GamesIcon sx={{ color: '#8C939D', fontSize: 28 }} />, 
             text: 'Gaming',
             path: '/gaming'
         },
         { 
-            icon: <FlagIcon sx={{ color: '#8C939D' }} />, 
+            icon: <FlagIcon sx={{ color: '#8C939D', fontSize: 28 }} />, 
             text: 'Pages',
             path: '/pages'
         },
         { 
-            icon: <SettingsIcon sx={{ color: '#8C939D' }} />, 
+            icon: <SettingsIcon sx={{ color: '#8C939D', fontSize: 28 }} />, 
             text: 'Settings',
             path: '/settings'
         }
@@ -106,15 +98,12 @@ const LeftSidebar = () => {
                 width: 320,
                 height: 'calc(100vh - 56px)',
                 overflowY: 'auto',
-                bgcolor: '#f0f2f5',
+                bgcolor: '#ffffff',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                msOverflowStyle: 'none',
+                scrollbarWidth: 'none',
                 '&::-webkit-scrollbar': {
-                    width: 8,
                     display: 'none'
-                },
-                '&:hover': {
-                    '&::-webkit-scrollbar': {
-                        display: 'block'
-                    }
                 }
             }}
         >
@@ -126,34 +115,32 @@ const LeftSidebar = () => {
                         onClick={() => handleNavigation(item.path)}
                         selected={location.pathname === item.path}
                         sx={{
-                            borderRadius: 2,
                             mx: 1,
                             mb: 0.5,
-                            height: 44,
+                            height: 52,
+                            transition: 'all 0.2s ease',
                             '&:hover': {
-                                bgcolor: 'rgba(0, 0, 0, 0.05)'
+                                bgcolor: 'rgba(0, 0, 0, 0.05)',
+                                transform: 'translateX(4px)'
                             },
                             '&.Mui-selected': {
                                 bgcolor: 'rgba(24, 119, 242, 0.1)',
                                 '&:hover': {
                                     bgcolor: 'rgba(24, 119, 242, 0.15)'
                                 }
-                            },
-                            '& .MuiListItemText-root': {
-                                overflow: 'hidden'
                             }
                         }}
                     >
-                        <ListItemIcon sx={{ minWidth: 36 }}>
+                        <ListItemIcon sx={{ minWidth: 52 }}>
                             {item.icon}
                         </ListItemIcon>
                         <ListItemText 
                             primary={
                                 <Typography 
                                     sx={{ 
-                                        fontWeight: item.primary ? 600 : 400,
+                                        fontWeight: location.pathname === item.path ? 600 : 500,
                                         fontSize: 15,
-                                        color: location.pathname === item.path ? '#1877F2' : '#050505',
+                                        color: location.pathname === item.path ? '#1B74E4' : '#050505',
                                         whiteSpace: 'nowrap',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis'
@@ -163,18 +150,6 @@ const LeftSidebar = () => {
                                 </Typography>
                             }
                         />
-                        {item.badge && (
-                            <Typography
-                                sx={{
-                                    color: '#1877F2',
-                                    fontSize: 13,
-                                    fontWeight: 500,
-                                    whiteSpace: 'nowrap'
-                                }}
-                            >
-                                {item.badge}
-                            </Typography>
-                        )}
                     </ListItem>
                 ))}
             </List>
@@ -187,7 +162,8 @@ const LeftSidebar = () => {
                         fontSize: 17,
                         fontWeight: 600,
                         color: '#65676B',
-                        mb: 1
+                        mb: 2,
+                        px: 1
                     }}
                 >
                     Your shortcuts
@@ -200,17 +176,23 @@ const LeftSidebar = () => {
                             sx={{
                                 borderRadius: 2,
                                 mb: 0.5,
-                                height: 44,
+                                height: 52,
+                                transition: 'all 0.2s ease',
                                 '&:hover': {
-                                    bgcolor: 'rgba(0, 0, 0, 0.05)'
+                                    bgcolor: 'rgba(0, 0, 0, 0.05)',
+                                    transform: 'translateX(4px)'
                                 }
                             }}
                         >
-                            <ListItemIcon sx={{ minWidth: 36 }}>
+                            <ListItemIcon sx={{ minWidth: 52 }}>
                                 <Avatar 
                                     src={shortcut.icon} 
                                     variant="rounded"
-                                    sx={{ width: 28, height: 28 }}
+                                    sx={{ 
+                                        width: 36, 
+                                        height: 36,
+                                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                                    }}
                                 />
                             </ListItemIcon>
                             <ListItemText 
@@ -218,6 +200,7 @@ const LeftSidebar = () => {
                                     <Typography 
                                         sx={{ 
                                             fontSize: 15,
+                                            fontWeight: 500,
                                             color: '#050505',
                                             whiteSpace: 'nowrap',
                                             overflow: 'hidden',
@@ -234,8 +217,8 @@ const LeftSidebar = () => {
             </Box>
 
             <Box sx={{ 
-                px: 2, 
-                pb: 2,
+                px: 3, 
+                pb: 3,
                 '& .MuiTypography-root': {
                     whiteSpace: 'normal',
                     wordBreak: 'break-word'
@@ -246,7 +229,7 @@ const LeftSidebar = () => {
                     sx={{
                         color: '#65676B',
                         fontSize: 13,
-                        lineHeight: 1.2,
+                        lineHeight: 1.4,
                         display: 'block',
                         mb: 2
                     }}

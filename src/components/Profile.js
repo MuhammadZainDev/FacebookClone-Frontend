@@ -118,7 +118,7 @@ const Profile = () => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.put(
-                'http://localhost:5000/api/users/profile',
+                'http://localhost:5000/api/profile/update',
                 formData,
                 {
                     headers: { Authorization: `Bearer ${token}` }
@@ -129,9 +129,10 @@ const Profile = () => {
             localStorage.setItem('user', JSON.stringify(response.data.user));
             setUser(response.data.user);
             toast.success('Profile updated successfully!');
+            setIsEditing(false);
         } catch (error) {
-            toast.error('Failed to update profile');
             console.error('Profile update error:', error);
+            toast.error(error.response?.data?.message || 'Failed to update profile');
         }
     };
 

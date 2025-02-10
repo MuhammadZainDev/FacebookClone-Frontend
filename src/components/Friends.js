@@ -25,22 +25,45 @@ const StyledCard = styled(Card)(({ theme }) => ({
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    borderRadius: '8px',
+    borderRadius: '12px',
     border: '1px solid #dddfe2',
-    transition: 'transform 0.2s',
+    transition: 'all 0.3s ease',
+    backgroundColor: '#ffffff',
+    overflow: 'hidden',
     '&:hover': {
         transform: 'translateY(-4px)',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+        boxShadow: '0 8px 24px rgba(0,0,0,0.12)'
     }
 }));
 
+const CardImageWrapper = styled(Box)({
+    position: 'relative',
+    paddingTop: '100%', // 1:1 Aspect ratio
+    backgroundColor: '#f0f2f5',
+    overflow: 'hidden'
+});
+
+const StyledCardMedia = styled(CardMedia)({
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    transition: 'transform 0.3s ease',
+    '&:hover': {
+        transform: 'scale(1.05)'
+    }
+});
+
 const ActionButton = styled(Button)(({ theme }) => ({
     width: '100%',
-    padding: '8px',
+    padding: '10px',
     fontWeight: 600,
-    fontSize: '0.9rem',
+    fontSize: '0.95rem',
     textTransform: 'none',
-    borderRadius: '6px',
+    borderRadius: '8px',
+    transition: 'all 0.2s ease',
 }));
 
 const ConfirmButton = styled(ActionButton)(({ theme }) => ({
@@ -48,6 +71,7 @@ const ConfirmButton = styled(ActionButton)(({ theme }) => ({
     color: '#fff',
     '&:hover': {
         backgroundColor: '#0851cc',
+        transform: 'translateY(-2px)'
     }
 }));
 
@@ -56,8 +80,18 @@ const DeleteButton = styled(ActionButton)(({ theme }) => ({
     color: '#65676b',
     '&:hover': {
         backgroundColor: '#e4e6eb',
+        transform: 'translateY(-2px)'
     }
 }));
+
+const MutualFriendsText = styled(Typography)({
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    color: '#65676b',
+    fontSize: '0.9rem',
+    marginBottom: '16px'
+});
 
 const SectionTitle = styled(Box)(({ theme }) => ({
     display: 'flex',
@@ -162,109 +196,184 @@ const Friends = () => {
                     py: 4,
                     px: 2,
                     mx: 'auto',
+                    maxWidth: '1200px',
                     overflowY: 'auto'
                 }}>
-                    <SectionTitle>
-                        <Typography variant="h6" fontWeight={600}>
-                            Friend Requests {pendingRequests.length > 0 && `(${pendingRequests.length})`}
-                        </Typography>
-                        <Button 
-                            sx={{ 
-                                color: '#0866ff',
-                                textTransform: 'none',
-                                fontWeight: 500
-                            }}
-                        >
-                            See all
-                        </Button>
-                    </SectionTitle>
+                    {/* Friend Requests Section - Only show if there are pending requests */}
+                    {pendingRequests.length > 0 && (
+                        <>
+                            <SectionTitle>
+                                <Typography variant="h6" fontWeight={600}>
+                                    Friend Requests ({pendingRequests.length})
+                                </Typography>
+                                <Button 
+                                    sx={{ 
+                                        color: '#0866ff',
+                                        textTransform: 'none',
+                                        fontWeight: 500
+                                    }}
+                                >
+                                    See all
+                                </Button>
+                            </SectionTitle>
 
-                    <Grid container spacing={2}>
-                        {pendingRequests.map((request) => (
-                            <Grid item xs={12} sm={6} md={3} key={request.id}>
-                                <StyledCard>
-                                    <CardMedia
-                                        component="img"
-                                        height="250"
-                                        image={getProfilePictureUrl(request.profile_picture)}
-                                        alt={request.first_name}
-                                        sx={{ objectFit: 'cover' }}
-                                    />
-                                    <CardContent sx={{ p: 2 }}>
-                                        <Typography 
-                                            gutterBottom 
-                                            variant="h6" 
-                                            component="div"
-                                            sx={{ 
-                                                fontWeight: 600,
-                                                fontSize: '1.1rem',
-                                                mb: 1
-                                            }}
-                                        >
-                                            {request.first_name} {request.last_name}
-                                        </Typography>
-                                        {request.mutual_friends > 0 && (
-                                            <Typography 
-                                                variant="body2" 
-                                                color="text.secondary"
-                                                sx={{ mb: 2, fontSize: '0.9rem' }}
-                                            >
-                                                {request.mutual_friends} mutual friend{request.mutual_friends > 1 ? 's' : ''}
-                                            </Typography>
-                                        )}
-                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                            <ConfirmButton
-                                                onClick={() => handleAcceptRequest(request.request_id)}
-                                            >
-                                                Confirm
-                                            </ConfirmButton>
-                                            <DeleteButton
-                                                onClick={() => handleRejectRequest(request.request_id)}
-                                            >
-                                                Delete
-                                            </DeleteButton>
-                                        </Box>
-                                    </CardContent>
-                                </StyledCard>
-                            </Grid>
-                        ))}
-                    </Grid>
-
-                    {/* All Friends Section */}
-                    {allFriends.length > 0 && (
-                        <Box sx={{ mb: 4 }}>
-                            <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-                                All Friends ({allFriends.length})
-                            </Typography>
-                            <Grid container spacing={2}>
-                                {allFriends.map(friend => (
-                                    <Grid item xs={12} sm={6} key={friend.id}>
-                                        <FriendCard 
-                                            user={friend} 
-                                            type="friend"
-                                            onUnfriend={handleUnfriend}
-                                        />
+                            <Grid container spacing={3}>
+                                {pendingRequests.map((request) => (
+                                    <Grid item xs={12} sm={6} md={4} lg={3} key={request.id}>
+                                        <StyledCard>
+                                            <CardImageWrapper>
+                                                <StyledCardMedia
+                                                    component="img"
+                                                    image={getProfilePictureUrl(request.profile_picture)}
+                                                    alt={request.first_name}
+                                                />
+                                            </CardImageWrapper>
+                                            <CardContent sx={{ p: 2 }}>
+                                                <Typography 
+                                                    gutterBottom 
+                                                    variant="h6" 
+                                                    component="div"
+                                                    sx={{ 
+                                                        fontWeight: 600,
+                                                        fontSize: '1.1rem',
+                                                        mb: 1,
+                                                        color: '#050505'
+                                                    }}
+                                                >
+                                                    {request.first_name} {request.last_name}
+                                                </Typography>
+                                                {request.mutual_friends > 0 && (
+                                                    <MutualFriendsText>
+                                                        <PersonAddIcon sx={{ fontSize: 18 }} />
+                                                        {request.mutual_friends} mutual friend{request.mutual_friends > 1 ? 's' : ''}
+                                                    </MutualFriendsText>
+                                                )}
+                                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                                                    <ConfirmButton
+                                                        onClick={() => handleAcceptRequest(request.request_id)}
+                                                    >
+                                                        Confirm Request
+                                                    </ConfirmButton>
+                                                    <DeleteButton
+                                                        onClick={() => handleRejectRequest(request.request_id)}
+                                                    >
+                                                        Delete Request
+                                                    </DeleteButton>
+                                                </Box>
+                                            </CardContent>
+                                        </StyledCard>
                                     </Grid>
                                 ))}
                             </Grid>
-                        </Box>
+                        </>
                     )}
 
-                    {/* Suggestions Section */}
-                    {suggestions.length > 0 && (
-                        <Box sx={{ mb: 4 }}>
-                            <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                    {/* Friend Suggestions Section */}
+                    <Box sx={{ mt: pendingRequests.length > 0 ? 4 : 0 }}>
+                        <SectionTitle>
+                            <Typography variant="h6" fontWeight={600}>
                                 People You May Know
                             </Typography>
-                            <Grid container spacing={2}>
-                                {suggestions.map(user => (
-                                    <Grid item xs={12} sm={6} key={user.id}>
-                                        <FriendCard 
-                                            user={user} 
-                                            type="suggestion"
-                                            onAddFriend={handleSendRequest}
-                                            onUnfriend={handleUnfriend}
-                                        />
+                        </SectionTitle>
+                        <Grid container spacing={3}>
+                            {suggestions.map((suggestion) => (
+                                <Grid item xs={12} sm={6} md={4} lg={3} key={suggestion.id}>
+                                    <StyledCard>
+                                        <CardImageWrapper>
+                                            <StyledCardMedia
+                                                component="img"
+                                                image={getProfilePictureUrl(suggestion.profile_picture)}
+                                                alt={suggestion.first_name}
+                                            />
+                                        </CardImageWrapper>
+                                        <CardContent sx={{ p: 2 }}>
+                                            <Typography 
+                                                gutterBottom 
+                                                variant="h6" 
+                                                component="div"
+                                                sx={{ 
+                                                    fontWeight: 600,
+                                                    fontSize: '1.1rem',
+                                                    mb: 1,
+                                                    color: '#050505'
+                                                }}
+                                            >
+                                                {suggestion.first_name} {suggestion.last_name}
+                                            </Typography>
+                                            {suggestion.mutual_friends > 0 && (
+                                                <MutualFriendsText>
+                                                    <PersonAddIcon sx={{ fontSize: 18 }} />
+                                                    {suggestion.mutual_friends} mutual friend{suggestion.mutual_friends > 1 ? 's' : ''}
+                                                </MutualFriendsText>
+                                            )}
+                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                                                <ConfirmButton
+                                                    onClick={() => handleSendRequest(suggestion.id)}
+                                                >
+                                                    Add Friend
+                                                </ConfirmButton>
+                                            </Box>
+                                        </CardContent>
+                                    </StyledCard>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </Box>
+
+                    {/* All Friends Section */}
+                    {allFriends.length > 0 && (
+                        <Box sx={{ mt: 4 }}>
+                            <SectionTitle>
+                                <Typography variant="h6" fontWeight={600}>
+                                    All Friends ({allFriends.length})
+                                </Typography>
+                            </SectionTitle>
+                            <Grid container spacing={3}>
+                                {allFriends.map((friend) => (
+                                    <Grid item xs={12} sm={6} md={4} lg={3} key={friend.id}>
+                                        <StyledCard>
+                                            <CardImageWrapper>
+                                                <StyledCardMedia
+                                                    component="img"
+                                                    image={getProfilePictureUrl(friend.profile_picture)}
+                                                    alt={friend.first_name}
+                                                />
+                                            </CardImageWrapper>
+                                            <CardContent sx={{ p: 2 }}>
+                                                <Typography 
+                                                    gutterBottom 
+                                                    variant="h6" 
+                                                    component="div"
+                                                    sx={{ 
+                                                        fontWeight: 600,
+                                                        fontSize: '1.1rem',
+                                                        mb: 1,
+                                                        color: '#050505'
+                                                    }}
+                                                >
+                                                    {friend.first_name} {friend.last_name}
+                                                </Typography>
+                                                {friend.mutual_friends > 0 && (
+                                                    <MutualFriendsText>
+                                                        <PersonAddIcon sx={{ fontSize: 18 }} />
+                                                        {friend.mutual_friends} mutual friend{friend.mutual_friends > 1 ? 's' : ''}
+                                                    </MutualFriendsText>
+                                                )}
+                                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                                                    <DeleteButton
+                                                        onClick={() => handleUnfriend(friend.id)}
+                                                        sx={{
+                                                            '&:hover': {
+                                                                bgcolor: '#ffebe9',
+                                                                color: '#dc3545'
+                                                            }
+                                                        }}
+                                                    >
+                                                        Unfriend
+                                                    </DeleteButton>
+                                                </Box>
+                                            </CardContent>
+                                        </StyledCard>
                                     </Grid>
                                 ))}
                             </Grid>
@@ -275,65 +384,5 @@ const Friends = () => {
         </Box>
     );
 };
-
-// FriendCard component
-const FriendCard = ({ user, type, onUnfriend, onAddFriend }) => (
-    <Card sx={{ 
-        display: 'flex', 
-        flexDirection: 'column',
-        height: '100%',
-        borderRadius: 2,
-        boxShadow: 'none',
-        border: '1px solid #E4E6EB'
-    }}>
-        <CardMedia
-            component="img"
-            height="200"
-            image={getProfilePictureUrl(user.profile_picture)}
-            alt={`${user.first_name} ${user.last_name}`}
-            sx={{ objectFit: 'cover' }}
-        />
-        <CardContent>
-            <Typography variant="h6">
-                {user.first_name} {user.last_name}
-            </Typography>
-            {user.mutual_friends > 0 && (
-                <Typography variant="body2" color="text.secondary">
-                    {user.mutual_friends} mutual friends
-                </Typography>
-            )}
-            <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-                {type === 'suggestion' && (
-                    <Button
-                        variant="contained"
-                        startIcon={<PersonAddIcon />}
-                        fullWidth
-                        onClick={() => onAddFriend(user.id)}
-                        sx={{ bgcolor: '#E4E6EB', color: 'black', '&:hover': { bgcolor: '#D8DADF' } }}
-                    >
-                        Add Friend
-                    </Button>
-                )}
-                {type === 'friend' && (
-                    <Button
-                        variant="contained"
-                        fullWidth
-                        onClick={() => onUnfriend(user.id)}
-                        sx={{ 
-                            bgcolor: '#E4E6EB', 
-                            color: 'black',
-                            '&:hover': { 
-                                bgcolor: '#DC3545',
-                                color: 'white'
-                            }
-                        }}
-                    >
-                        Unfriend
-                    </Button>
-                )}
-            </Box>
-        </CardContent>
-    </Card>
-);
 
 export default Friends;

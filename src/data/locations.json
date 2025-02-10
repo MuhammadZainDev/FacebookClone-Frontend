@@ -1,0 +1,283 @@
+{
+    "countries": [
+        {
+            "name": "Pakistan",
+            "cities": [
+                {
+                    "name": "Karachi",
+                    "locations": [
+                        {
+                            "name": "Karachi",
+                            "address": "Karachi, Sindh, Pakistan"
+                        },
+                        {
+                            "name": "DHA",
+                            "address": "Defence Housing Authority, Karachi, Pakistan"
+                        },
+                        {
+                            "name": "Clifton",
+                            "address": "Clifton, Karachi, Pakistan"
+                        },
+                        {
+                            "name": "Gulshan-e-Iqbal",
+                            "address": "Gulshan-e-Iqbal, Karachi, Pakistan"
+                        },
+                        {
+                            "name": "North Nazimabad",
+                            "address": "North Nazimabad, Karachi, Pakistan"
+                        },
+                        {
+                            "name": "PECHS",
+                            "address": "PECHS, Karachi, Pakistan"
+                        },
+                        {
+                            "name": "Saddar",
+                            "address": "Saddar, Karachi, Pakistan"
+                        },
+                        {
+                            "name": "Gulistan-e-Johar",
+                            "address": "Gulistan-e-Johar, Karachi, Pakistan"
+                        },
+                        {
+                            "name": "Malir",
+                            "address": "Malir, Karachi, Pakistan"
+                        },
+                        {
+                            "name": "FB Area",
+                            "address": "Federal B Area, Karachi, Pakistan"
+                        }
+                    ]
+                },
+                {
+                    "name": "Lahore",
+                    "locations": [
+                        {
+                            "name": "Lahore",
+                            "address": "Lahore, Punjab, Pakistan"
+                        },
+                        {
+                            "name": "Johar Town",
+                            "address": "Johar Town, Lahore, Pakistan"
+                        },
+                        {
+                            "name": "Gulberg",
+                            "address": "Gulberg, Lahore, Pakistan"
+                        },
+                        {
+                            "name": "Model Town",
+                            "address": "Model Town, Lahore, Pakistan"
+                        },
+                        {
+                            "name": "DHA Lahore",
+                            "address": "Defence Housing Authority, Lahore, Pakistan"
+                        },
+                        {
+                            "name": "Bahria Town",
+                            "address": "Bahria Town, Lahore, Pakistan"
+                        },
+                        {
+                            "name": "Allama Iqbal Town",
+                            "address": "Allama Iqbal Town, Lahore, Pakistan"
+                        },
+                        {
+                            "name": "Garden Town",
+                            "address": "Garden Town, Lahore, Pakistan"
+                        }
+                    ]
+                },
+                {
+                    "name": "Islamabad",
+                    "locations": [
+                        {
+                            "name": "Islamabad",
+                            "address": "Islamabad, Pakistan"
+                        },
+                        {
+                            "name": "F-8",
+                            "address": "F-8, Islamabad, Pakistan"
+                        },
+                        {
+                            "name": "E-11",
+                            "address": "E-11, Islamabad, Pakistan"
+                        },
+                        {
+                            "name": "Blue Area",
+                            "address": "Blue Area, Islamabad, Pakistan"
+                        },
+                        {
+                            "name": "F-6",
+                            "address": "F-6, Islamabad, Pakistan"
+                        },
+                        {
+                            "name": "G-9",
+                            "address": "G-9, Islamabad, Pakistan"
+                        }
+                    ]
+                },
+                {
+                    "name": "Rawalpindi",
+                    "locations": [
+                        {
+                            "name": "Rawalpindi",
+                            "address": "Rawalpindi, Punjab, Pakistan"
+                        },
+                        {
+                            "name": "Saddar",
+                            "address": "Saddar, Rawalpindi, Pakistan"
+                        },
+                        {
+                            "name": "Bahria Town",
+                            "address": "Bahria Town, Rawalpindi, Pakistan"
+                        },
+                        {
+                            "name": "Chaklala",
+                            "address": "Chaklala, Rawalpindi, Pakistan"
+                        }
+                    ]
+                },
+                {
+                    "name": "Faisalabad",
+                    "locations": [
+                        {
+                            "name": "Faisalabad",
+                            "address": "Faisalabad, Punjab, Pakistan"
+                        },
+                        {
+                            "name": "Gulberg",
+                            "address": "Gulberg, Faisalabad, Pakistan"
+                        },
+                        {
+                            "name": "Madina Town",
+                            "address": "Madina Town, Faisalabad, Pakistan"
+                        }
+                    ]
+                },
+                {
+                    "name": "Multan",
+                    "locations": [
+                        {
+                            "name": "Multan",
+                            "address": "Multan, Punjab, Pakistan"
+                        },
+                        {
+                            "name": "Gulgasht Colony",
+                            "address": "Gulgasht Colony, Multan, Pakistan"
+                        },
+                        {
+                            "name": "Cantt",
+                            "address": "Cantt Area, Multan, Pakistan"
+                        }
+                    ]
+                },
+                {
+                    "name": "Peshawar",
+                    "locations": [
+                        {
+                            "name": "Peshawar",
+                            "address": "Peshawar, KPK, Pakistan"
+                        },
+                        {
+                            "name": "Hayatabad",
+                            "address": "Hayatabad, Peshawar, Pakistan"
+                        },
+                        {
+                            "name": "University Town",
+                            "address": "University Town, Peshawar, Pakistan"
+                        }
+                    ]
+                },
+                {
+                    "name": "Quetta",
+                    "locations": [
+                        {
+                            "name": "Quetta",
+                            "address": "Quetta, Balochistan, Pakistan"
+                        },
+                        {
+                            "name": "Jinnah Town",
+                            "address": "Jinnah Town, Quetta, Pakistan"
+                        },
+                        {
+                            "name": "Satellite Town",
+                            "address": "Satellite Town, Quetta, Pakistan"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "United States",
+            "cities": [
+                {
+                    "name": "New York",
+                    "locations": [
+                        {
+                            "name": "Manhattan",
+                            "address": "Manhattan, New York, USA"
+                        },
+                        {
+                            "name": "Brooklyn",
+                            "address": "Brooklyn, New York, USA"
+                        },
+                        {
+                            "name": "Queens",
+                            "address": "Queens, New York, USA"
+                        }
+                    ]
+                },
+                {
+                    "name": "Los Angeles",
+                    "locations": [
+                        {
+                            "name": "Hollywood",
+                            "address": "Hollywood, Los Angeles, USA"
+                        },
+                        {
+                            "name": "Beverly Hills",
+                            "address": "Beverly Hills, Los Angeles, USA"
+                        },
+                        {
+                            "name": "Santa Monica",
+                            "address": "Santa Monica, Los Angeles, USA"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "United Kingdom",
+            "cities": [
+                {
+                    "name": "London",
+                    "locations": [
+                        {
+                            "name": "Westminster",
+                            "address": "Westminster, London, UK"
+                        },
+                        {
+                            "name": "Camden",
+                            "address": "Camden, London, UK"
+                        },
+                        {
+                            "name": "Greenwich",
+                            "address": "Greenwich, London, UK"
+                        }
+                    ]
+                },
+                {
+                    "name": "Manchester",
+                    "locations": [
+                        {
+                            "name": "City Centre",
+                            "address": "City Centre, Manchester, UK"
+                        },
+                        {
+                            "name": "Northern Quarter",
+                            "address": "Northern Quarter, Manchester, UK"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+} 

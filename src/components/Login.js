@@ -148,21 +148,33 @@ const Login = () => {
                             Log in
                         </Button>
 
-                        <Divider sx={{ my: 2 }}>
-                            <Typography sx={{ color: '#96999E', px: 1 }}>or</Typography>
+                        <Divider sx={{ my: 3 }}>
+                            <Typography sx={{ color: '#96999E', px: 2 }}>or</Typography>
                         </Divider>
 
-                        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-                            <GoogleLogin
-                                onSuccess={handleGoogleSuccess}
-                                onError={handleGoogleError}
-                                size="large"
-                                theme="filled_blue"
-                                shape="rectangular"
-                                width="300"
-                                useOneTap={true}
-                                cookiePolicy={'single_host_origin'}
-                            />
+                        <Box sx={{ 
+                            display: 'flex', 
+                            justifyContent: 'center', 
+                            mb: 2 
+                        }}>
+                            <Box
+                                sx={{
+                                    width: '100%',
+                                    maxWidth: 300,
+                                    position: 'relative'
+                                }}
+                            >
+                                <GoogleLogin
+                                    onSuccess={handleGoogleSuccess}
+                                    onError={handleGoogleError}
+                                    size="large"
+                                    width="300"
+                                    text="signin_with"
+                                    shape="rectangular"
+                                    logo_alignment="center"
+                                    theme="outline"
+                                />
+                            </Box>
                         </Box>
 
                         <Typography 

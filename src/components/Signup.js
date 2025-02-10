@@ -149,15 +149,29 @@ const Signup = () => {
                         It's quick and easy.
                     </Typography>
 
-                    {/* Google Sign-in Button */}
-                    <Box sx={{ mb: 3 }}>
-                        <GoogleLogin
-                            onSuccess={handleGoogleSuccess}
-                            onError={handleGoogleError}
-                            size="large"
-                            width="100%"
-                            text="signup_with"
-                        />
+                    <Box sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'center', 
+                        mb: 3 
+                    }}>
+                        <Box
+                            sx={{
+                                width: '100%',
+                                maxWidth: 300,
+                                position: 'relative'
+                            }}
+                        >
+                            <GoogleLogin
+                                onSuccess={handleGoogleSuccess}
+                                onError={handleGoogleError}
+                                size="large"
+                                width="300"
+                                text="signup_with"
+                                shape="rectangular"
+                                logo_alignment="center"
+                                theme="outline"
+                            />
+                        </Box>
                     </Box>
 
                     <Divider sx={{ my: 3 }}>

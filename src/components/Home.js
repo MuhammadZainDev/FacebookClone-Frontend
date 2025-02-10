@@ -92,21 +92,28 @@ const CreatePost = ({ onOpenPostModal }) => {
 
 const Post = ({ post, handleLike, handleOpenComments }) => {
     const [liked, setLiked] = useState(post.is_liked);
-    const [likesCount, setLikesCount] = useState(post.likes_count);
+    const [likesCount, setLikesCount] = useState(parseInt(post.likes_count) || 0);
 
     const onLikeClick = async () => {
         try {
             const token = localStorage.getItem('token');
             if (!liked) {
-                await axios.post(`http://localhost:5000/api/posts/${post.id}/like`, {}, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                setLikesCount(prev => prev + 1);
+                const response = await axios.post(
+                    `http://localhost:5000/api/posts/${post.id}/like`,
+                    {},
+                    {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }
+                );
+                setLikesCount(response.data.likesCount);
             } else {
-                await axios.delete(`http://localhost:5000/api/posts/${post.id}/like`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                setLikesCount(prev => prev - 1);
+                const response = await axios.delete(
+                    `http://localhost:5000/api/posts/${post.id}/like`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }
+                );
+                setLikesCount(response.data.likesCount);
             }
             setLiked(!liked);
         } catch (error) {
@@ -120,7 +127,7 @@ const Post = ({ post, handleLike, handleOpenComments }) => {
             <CardHeader
                 avatar={
                     <Avatar 
-                        src={getProfilePictureUrl(post.profile_picture)}
+                        src={post.profile_picture ? getProfilePictureUrl(post.profile_picture) : undefined}
                         sx={{ width: 40, height: 40 }}
                     />
                 }
@@ -198,7 +205,7 @@ const Post = ({ post, handleLike, handleOpenComments }) => {
                             }} 
                         />
                         <Typography color="text.secondary">
-                            {likesCount}
+                            {likesCount > 0 ? likesCount : '0'}
                         </Typography>
                     </Box>
                     <Typography 
